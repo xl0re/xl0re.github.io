@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>xlore | Video Editor</title>
+<meta name="description" content="Fast, meme-style video editing for Shorts, Reels, TikTok and YouTube.">
+<meta property="og:title" content="xlore | Video Editor">
+<meta property="og:description" content="Fast, meme-style video editing for Shorts, Reels, TikTok and YouTube.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://xl0re.github.io/">
+<meta property="og:image" content="https://xl0re.github.io/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#13151b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎬%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -58,7 +67,6 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,8.5vw,92px);l
 .reel[hidden]{display:none}
 .reel video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;background:#000}
 .reel .sound{position:absolute;right:12px;bottom:12px;background:rgba(0,0,0,.55);color:#fff;border-color:#fff}
-@media (min-width:560px){.card.long{grid-column:span 2}}
 /* timeline strip: the one memorable element */
 .timeline{position:relative;margin-top:46px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 14px 14px 52px;overflow:hidden}
 .track{position:relative;height:34px;margin:6px 0}
@@ -77,9 +85,14 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,48px);let
 
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s ease}
 .reveal.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+@media (prefers-reduced-motion:reduce){.reveal{transform:none;transition:opacity .5s ease}}
 /* work */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px;align-items:start}
+.grid{display:grid;grid-template-columns:1fr 1fr .8fr;gap:26px 22px;align-items:start}
+.card.short{grid-column:3;grid-row:1 / span 2}
+@media (max-width:820px){
+  .grid{grid-template-columns:1fr}
+  .card.short{grid-column:auto;grid-row:auto;max-width:300px}
+}
 .card{display:block;text-decoration:none}
 .poster{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);display:flex;align-items:flex-end;padding:14px;color:#fff}
 .poster.short{aspect-ratio:9/16}
@@ -101,6 +114,18 @@ a.card:hover .play{transform:scale(1.12)}
 .card.empty{cursor:default}
 .card.empty .poster{opacity:.55}
 .card.empty .play{display:none}
+
+.poster{transition:transform .25s ease,box-shadow .25s ease}
+a.card:hover .poster{transform:translateY(-4px);box-shadow:0 14px 30px rgba(0,0,0,.28)}
+.card.is-loading .poster::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.3) 50%,transparent 70%);background-size:220% 100%;animation:shimmer 1.4s linear infinite}
+@keyframes shimmer{from{background-position:120% 0}to{background-position:-120% 0}}
+@media (prefers-reduced-motion:reduce){.card.is-loading .poster::after{animation:none;background:rgba(255,255,255,.12)}}
+.deadline{margin:22px 0 0;padding:14px 18px;border:2px dashed var(--line);border-radius:12px;font-weight:700}
+.steps{list-style:none;margin:28px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;counter-reset:s}
+.steps li{counter-increment:s;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:6px}
+.steps li::before{content:counter(s);font-family:var(--display);font-weight:800;font-size:34px;color:var(--c1);line-height:1}
+.steps b{font-size:18px}
+.steps span{color:var(--muted);font-size:15px}
 
 /* services */
 .rows{border-top:2px solid var(--ink)}
@@ -182,6 +207,17 @@ footer{border-top:1px solid var(--line);padding:22px 0;color:var(--muted);font-s
           <span class="price" data-i="s3_p">let's talk</span>
         </div>
       </div>
+      <p class="deadline" data-i="del"></p>
+    </section>
+
+    <section id="how">
+      <h2 data-i="how_h">How it works</h2>
+      <ol class="steps">
+        <li><b data-i="hw1_t"></b><span data-i="hw1_d"></span></li>
+        <li><b data-i="hw2_t"></b><span data-i="hw2_d"></span></li>
+        <li><b data-i="hw3_t"></b><span data-i="hw3_d"></span></li>
+        <li><b data-i="hw4_t"></b><span data-i="hw4_d"></span></li>
+      </ol>
     </section>
 
     <section class="contact" id="contact">
@@ -232,6 +268,10 @@ var T = {
     w4_t:"3D-едити",w4_n:"Анімований текст і концепт заставки для стріму",
     w5_t:"Reels і Shorts",w5_n:"Короткі вертикальні кліпи"}
 };
+
+Object.assign(T.en,{del:"Delivery: Shorts in 1-2 days, YouTube videos in 2-4 days. Never longer than 6 days, often faster.",how_h:"How it works",hw1_t:"Message me",hw1_d:"Send a link to your channel and what you need.",hw2_t:"We agree",hw2_d:"Format, deadline and price. No surprises.",hw3_t:"I edit",hw3_d:"You get a draft quickly.",hw4_t:"Fixes and final",hw4_d:"I fix what you point out and send the final file."});
+Object.assign(T.pl,{del:"Termin: Shorty w 1-2 dni, filmy na YouTube w 2-4 dni. Nigdy dłużej niż 6 dni, często szybciej.",how_h:"Jak pracuję",hw1_t:"Napisz do mnie",hw1_d:"Wyślij link do kanału i napisz, czego potrzebujesz.",hw2_t:"Ustalamy",hw2_d:"Format, termin i cena. Bez niespodzianek.",hw3_t:"Montuję",hw3_d:"Szybko dostajesz wersję roboczą.",hw4_t:"Poprawki i finał",hw4_d:"Poprawiam to, co wskażesz, i wysyłam gotowy plik."});
+Object.assign(T.uk,{del:"Терміни: Shorts за 1-2 дні, відео для YouTube за 2-4 дні. Ніколи довше за 6 днів, часто швидше.",how_h:"Як я працюю",hw1_t:"Напиши мені",hw1_d:"Надішли посилання на канал і що тобі потрібно.",hw2_t:"Домовляємось",hw2_d:"Формат, термін і ціна. Без сюрпризів.",hw3_t:"Монтую",hw3_d:"Швидко отримаєш чернетку.",hw4_t:"Правки і фінал",hw4_d:"Виправляю, що вкажеш, і надсилаю готовий файл."});
 
 var lang = "en";
 try{
@@ -294,8 +334,10 @@ function renderWork(){
       v.muted = true; v.defaultMuted = true; v.loop = true; v.playsInline = true;
       v.setAttribute("playsinline",""); v.setAttribute("aria-hidden","true"); v.preload = "none";
       v.dataset.src = w.video;
-      v.addEventListener("playing", function(){ el.classList.add("is-playing"); });
-      v.addEventListener("error", function(){ v.remove(); el.classList.remove("is-playing"); });
+      el.classList.add("is-loading");
+      v.addEventListener("playing", function(){ el.classList.add("is-playing"); el.classList.remove("is-loading"); });
+      v.addEventListener("loadeddata", function(){ el.classList.remove("is-loading"); });
+      v.addEventListener("error", function(){ v.remove(); el.classList.remove("is-playing"); el.classList.remove("is-loading"); });
       var po = el.querySelector(".poster");
       po.insertBefore(v, po.firstChild);
       if(io){ io.observe(v); } else { v.autoplay = true; v.src = w.video; }
@@ -325,7 +367,7 @@ document.querySelectorAll("[data-lang]").forEach(function(b){
 document.getElementById("yr").textContent = new Date().getFullYear();
 renderReel();
 applyLang();
-document.querySelectorAll("section h2, .sub, .row, .contact .big").forEach(reveal);
+document.querySelectorAll("section h2, .sub, .row, .steps li, .deadline, .contact .big").forEach(reveal);
 </script>
 </body>
 </html>
