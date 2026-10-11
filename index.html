@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>xlore | Video Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f2f0ea; --panel:#e6e3da; --ink:#15171c; --muted:#5d6068; --line:#cfcbbf;
+  --c1:#e8503f; --c2:#1d8fc4; --c3:#d49a00; --on-clip:#fff;
+  --display:'Bricolage Grotesque','Arial Black',Impact,sans-serif;
+  --body:'DM Sans','Segoe UI',Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#13151b; --panel:#1c1f27; --ink:#ece9e1; --muted:#9a9ca4; --line:#2b2f3a;
+    --c1:#ff6a58; --c2:#4cb8ee; --c3:#f2b928;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13151b; --panel:#1c1f27; --ink:#ece9e1; --muted:#9a9ca4; --line:#2b2f3a;
+  --c1:#ff6a58; --c2:#4cb8ee; --c3:#f2b928;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--c2);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+
+/* top bar */
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
+.logo{font-family:var(--display);font-weight:800;font-size:22px;text-decoration:none;letter-spacing:-.02em}
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.langs{display:flex;gap:6px}
+.langs .pill{padding:5px 10px}
+.pill[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.pill{font:inherit;font-size:14px;font-weight:700;background:transparent;color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;text-decoration:none}
+.pill:hover{background:var(--ink);color:var(--bg)}
+
+/* hero */
+.hero{padding:44px 0 28px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,8.5vw,92px);line-height:.98;letter-spacing:-.035em;margin:0 0 22px;max-width:15ch}
+.lead{font-size:clamp(18px,2.4vw,22px);color:var(--muted);max-width:46ch;margin:0 0 30px}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-block;font-weight:700;font-size:16px;text-decoration:none;padding:13px 24px;border-radius:10px;border:2px solid var(--ink)}
+.btn.main{background:var(--ink);color:var(--bg)}
+.btn.main:hover{background:var(--c1);border-color:var(--c1);color:#fff}
+.btn.alt:hover{background:var(--panel)}
+
+.reel{position:relative;margin-top:40px}
+.reel[hidden]{display:none}
+.reel video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;background:#000}
+.reel .sound{position:absolute;right:12px;bottom:12px;background:rgba(0,0,0,.55);color:#fff;border-color:#fff}
+@media (min-width:560px){.card.long{grid-column:span 2}}
+/* timeline strip: the one memorable element */
+.timeline{position:relative;margin-top:46px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 14px 14px 52px;overflow:hidden}
+.track{position:relative;height:34px;margin:6px 0}
+.track::before{content:attr(data-label);position:absolute;left:-40px;top:0;height:100%;display:flex;align-items:center;font-size:12px;font-weight:700;color:var(--muted)}
+.clip{position:absolute;top:0;height:100%;border-radius:6px;color:var(--on-clip);font-size:12px;font-weight:700;display:flex;align-items:center;padding:0 10px;white-space:nowrap;overflow:hidden}
+.c1{background:var(--c1)}.c2{background:var(--c2)}.c3{background:var(--c3);color:#1a1400}
+.wave{background:repeating-linear-gradient(90deg,var(--c2) 0 3px,transparent 3px 6px);opacity:.75}
+.playhead{position:absolute;top:0;bottom:0;left:52px;width:2px;background:var(--ink);animation:scrub 3.2s cubic-bezier(.6,0,.3,1) .4s 1 forwards}
+.playhead::before{content:"";position:absolute;top:0;left:-6px;border:7px solid transparent;border-top:9px solid var(--ink);border-bottom:0}
+@keyframes scrub{from{left:52px}to{left:calc(100% - 20px)}}
+@media (prefers-reduced-motion:reduce){.playhead{animation:none;left:38%}}
+
+section{padding:64px 0 8px}
+h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,48px);letter-spacing:-.03em;line-height:1.05;margin:0 0 10px}
+.sub{color:var(--muted);margin:0 0 30px;max-width:52ch}
+
+/* work */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px;align-items:start}
+.card{display:block;text-decoration:none}
+.poster{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);display:flex;align-items:flex-end;padding:14px;color:#fff}
+.poster.short{aspect-ratio:9/16}
+.poster.long{aspect-ratio:16/9}
+.poster.g1{background:linear-gradient(160deg,var(--c1),#7a1d4a)}
+.poster.g2{background:linear-gradient(160deg,var(--c2),#1b3a8a)}
+.poster.g3{background:linear-gradient(160deg,var(--c3),#a2441c)}
+.play{position:absolute;top:50%;left:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:rgba(0,0,0,.45);display:grid;place-items:center;transition:transform .15s}
+.play::after{content:"";margin-left:4px;border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent}
+a.card:hover .play{transform:scale(1.12)}
+.poster video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.poster .tag{position:relative;z-index:2}
+.play{z-index:2;transition:opacity .2s,transform .15s}
+.card.is-playing .play{opacity:0}
+.card.is-playing:hover .play{opacity:1}
+.tag{font-size:13px;font-weight:700;background:rgba(0,0,0,.5);padding:3px 10px;border-radius:999px}
+.card h3{font-size:17px;margin:12px 0 2px}
+.card p{margin:0;color:var(--muted);font-size:15px}
+.card.empty{cursor:default}
+.card.empty .poster{opacity:.55}
+.card.empty .play{display:none}
+
+/* services */
+.rows{border-top:2px solid var(--ink)}
+.row{display:grid;grid-template-columns:1.1fr 2fr auto;gap:12px 28px;align-items:baseline;padding:22px 0;border-bottom:1px solid var(--line)}
+.row h3{font-family:var(--display);font-size:26px;letter-spacing:-.02em;margin:0}
+.row p{margin:0;color:var(--muted)}
+.price{font-weight:700;font-size:18px;white-space:nowrap}
+@media (max-width:720px){.row{grid-template-columns:1fr}}
+
+/* contact */
+.contact{padding:64px 0 70px}
+.big{display:flex;flex-wrap:wrap;gap:14px;margin-top:24px}
+footer{border-top:1px solid var(--line);padding:22px 0;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="logo" href="#top">xlore</a>
+    <div class="tools">
+      <div class="langs" role="group" aria-label="Language"><button class="pill" data-lang="en">EN</button><button class="pill" data-lang="pl">PL</button><button class="pill" data-lang="uk">UA</button></div>
+      <a class="pill" href="#contact" data-i="nav_contact">Contact</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <h1 data-i="h1">Videos people actually watch to the end.</h1>
+      <p class="lead" data-i="lead">Fast, meme-style editing for Shorts, Reels, TikTok and YouTube: zooms, GIFs, sound effects, animations and subtitles.</p>
+      <div class="cta">
+        <a class="btn main" href="#work" data-i="cta_work">See my work</a>
+        <a class="btn alt" href="#contact" data-i="cta_hire">Get a quote</a>
+      </div>
+
+      <div class="reel" id="reel" hidden></div>
+
+      <div class="timeline" aria-hidden="true">
+        <div class="track" data-label="V2">
+          <span class="clip c3" style="left:6%;width:14%">GIF</span>
+          <span class="clip c1" style="left:34%;width:10%">zoom</span>
+          <span class="clip c3" style="left:58%;width:16%">meme</span>
+          <span class="clip c1" style="left:82%;width:9%">anim</span>
+        </div>
+        <div class="track" data-label="V1">
+          <span class="clip c2" style="left:0;width:30%">intro</span>
+          <span class="clip c2" style="left:30.5%;width:36%">main part</span>
+          <span class="clip c2" style="left:67%;width:33%">outro</span>
+        </div>
+        <div class="track" data-label="A1">
+          <span class="clip wave" style="left:0;width:100%"></span>
+        </div>
+        <div class="playhead"></div>
+      </div>
+    </div>
+
+    <section id="work">
+      <h2 data-i="work_h">Selected work</h2>
+      <p class="sub" data-i="work_sub">Shorts and long videos. Tap a video to watch the full version.</p>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section id="services">
+      <h2 data-i="svc_h">What I do</h2>
+      <p class="sub" data-i="svc_sub">Prices are a starting point. Send me your video and I'll give you an exact number.</p>
+      <div class="rows">
+        <div class="row">
+          <h3 data-i="s1_t">Shorts / Reels / TikTok</h3>
+          <p data-i="s1_d">Up to 60 seconds. Dynamic cuts, zooms, memes, captions, sound design.</p>
+          <span class="price" data-i="s1_p">from 30 zł</span>
+        </div>
+        <div class="row">
+          <h3 data-i="s2_t">YouTube videos</h3>
+          <p data-i="s2_d">Up to 15 minutes. Pacing, B-roll, meme inserts, animations, subtitles, thumbnail-ready frames.</p>
+          <span class="price" data-i="s2_p">from 100 zł</span>
+        </div>
+        <div class="row">
+          <h3 data-i="s3_t">Monthly package</h3>
+          <p data-i="s3_d">A set number of videos every month at a better price. Good for channels that post often.</p>
+          <span class="price" data-i="s3_p">let's talk</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <h2 data-i="ct_h">Let's make your next video.</h2>
+      <p class="sub" data-i="ct_sub">Write me with a link to your channel and what you need. I usually reply within a day.</p>
+      <div class="big">
+        <a class="btn main" href="https://t.me/xl0re" target="_blank" rel="noopener">Telegram @xl0re</a>
+        <a class="btn alt" href="https://instagram.com/xlore_davinci" target="_blank" rel="noopener">Instagram @xlore_davinci</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>© <span id="yr"></span> xlore</footer>
+</div>
+
+<script>
+/* ============ EDIT HERE ============
+   REEL_SRC: showreel video file URL (leave "" until the video is added).
+   WORK: kind "short" (vertical) or "long" (horizontal). url = link to the video.
+*/
+var REEL_SRC = "";
+
+var WORK = [
+  { k:"w1", kind:"long",  url:"https://youtu.be/WGEdI12ad_0",           video:"meme.mp4" },
+  { k:"w2", kind:"long",  url:"https://youtu.be/ox6mKp1n-Gg",           video:"news.mp4" },
+  { k:"w3", kind:"long",  url:"https://youtu.be/GpKZXDo9TAo",           video:"ads.mp4" },
+  { k:"w4", kind:"long",  url:"https://youtu.be/SmcTB0ixxwA",           video:"edit3d.mp4" },
+  { k:"w5", kind:"short", url:"https://youtube.com/shorts/QOODsKgXIEg", video:"reels.mp4" }
+];
+
+var T = {
+  en:{nav_contact:"Contact",h1:"Videos people actually watch to the end.",lead:"Fast, meme-style editing for Shorts, Reels, TikTok and YouTube: zooms, GIFs, sound effects, animations and subtitles.",cta_work:"See my work",cta_hire:"Get a quote",work_h:"Selected work",work_sub:"Meme, news, ad and 3D edits. Tap a video to watch the full version.",svc_h:"What I do",svc_sub:"Prices are a starting point. Send me your video and I'll give you an exact number.",s1_t:"Shorts / Reels / TikTok",s1_d:"Up to 60 seconds. Dynamic cuts, zooms, memes, captions, sound design.",s1_p:"from 30 zł",s2_t:"YouTube videos",s2_d:"Up to 15 minutes. Pacing, B-roll, meme inserts, animations, subtitles, thumbnail-ready frames.",s2_p:"from 100 zł",s3_t:"Monthly package",s3_d:"A set number of videos every month at a better price. Good for channels that post often.",s3_p:"let's talk",ct_h:"Let's make your next video.",ct_sub:"Write me with a link to your channel and what you need. I usually reply within a day.",t_short:"Short",t_long:"Video",
+    w1_t:"Meme edit with GIFs",w1_n:"Fast cuts, GIFs, stretched memes",
+    w2_t:"News-style compilation",w2_n:"Serious tone, short clips cut into one video",
+    w3_t:"Ad videos",w3_n:"Promo edits",
+    w4_t:"3D edits",w4_n:"Animated text and a stream intro concept",
+    w5_t:"Reels & Shorts",w5_n:"Short vertical clips"},
+  pl:{nav_contact:"Kontakt",h1:"Filmy, które ogląda się do samego końca.",lead:"Szybki montaż w stylu memicznym do Shorts, Reels, TikToka i YouTube: zoomy, gify, efekty dźwiękowe, animacje i napisy.",cta_work:"Zobacz realizacje",cta_hire:"Zapytaj o wycenę",work_h:"Wybrane prace",work_sub:"Montaż memiczny, newsowy, reklamowy i 3D. Kliknij film, żeby obejrzeć pełną wersję.",svc_h:"Co robię",svc_sub:"Ceny są orientacyjne. Wyślij mi swój film, a podam dokładną kwotę.",s1_t:"Shorts / Reels / TikTok",s1_d:"Do 60 sekund. Dynamiczne cięcia, zoomy, memy, napisy, sound design.",s1_p:"od 30 zł",s2_t:"Filmy na YouTube",s2_d:"Do 15 minut. Tempo, B-roll, wstawki memiczne, animacje, napisy, kadry pod miniaturkę.",s2_p:"od 100 zł",s3_t:"Pakiet miesięczny",s3_d:"Stała liczba filmów co miesiąc w lepszej cenie. Dla kanałów, które publikują często.",s3_p:"dogadajmy się",ct_h:"Zróbmy Twój następny film.",ct_sub:"Napisz do mnie z linkiem do kanału i tym, czego potrzebujesz. Zwykle odpowiadam w ciągu doby.",t_short:"Short",t_long:"Film",
+    w1_t:"Montaż memiczny z gifami",w1_n:"Szybkie cięcia, gify, rozciągane memy",
+    w2_t:"Kompilacja w stylu newsowym",w2_n:"Poważny ton, krótkie fragmenty w jednym filmie",
+    w3_t:"Filmy reklamowe",w3_n:"Montaż promocyjny",
+    w4_t:"Edity 3D",w4_n:"Animowany tekst i koncept intra na stream",
+    w5_t:"Reels i Shorts",w5_n:"Krótkie pionowe klipy"},
+  uk:{nav_contact:"Контакти",h1:"Відео, які дивляться до самого кінця.",lead:"Швидкий монтаж у мемному стилі для Shorts, Reels, TikTok і YouTube: зуми, гіфки, звукові ефекти, анімації та субтитри.",cta_work:"Мої роботи",cta_hire:"Дізнатися ціну",work_h:"Обрані роботи",work_sub:"Мемний, новинний, рекламний монтаж і 3D. Натисни на відео, щоб подивитися повну версію.",svc_h:"Що я роблю",svc_sub:"Ціни орієнтовні. Надішли своє відео, і я назву точну суму.",s1_t:"Shorts / Reels / TikTok",s1_d:"До 60 секунд. Динамічні склейки, зуми, меми, субтитри, саунд-дизайн.",s1_p:"від 30 zł",s2_t:"Відео для YouTube",s2_d:"До 15 хвилин. Темп, B-roll, мемні вставки, анімації, субтитри, кадри під прев'ю.",s2_p:"від 100 zł",s3_t:"Місячний пакет",s3_d:"Фіксована кількість відео щомісяця за кращою ціною. Для каналів, які публікують часто.",s3_p:"домовимось",ct_h:"Зробімо твоє наступне відео.",ct_sub:"Напиши мені з посиланням на канал і тим, що потрібно. Зазвичай відповідаю протягом доби.",t_short:"Short",t_long:"Відео",
+    w1_t:"Мемний монтаж з гіфками",w1_n:"Швидкі склейки, гіфки, розтягнуті меми",
+    w2_t:"Новинна нарізка",w2_n:"Серйозний тон, короткі уривки в одному відео",
+    w3_t:"Рекламні відео",w3_n:"Рекламний монтаж",
+    w4_t:"3D-едити",w4_n:"Анімований текст і концепт заставки для стріму",
+    w5_t:"Reels і Shorts",w5_n:"Короткі вертикальні кліпи"}
+};
+
+var lang = "en";
+try{
+  var saved = localStorage.getItem("xlore-lang");
+  if(saved && T[saved]) lang = saved;
+  else {
+    var nl = (navigator.language || "").toLowerCase();
+    if(nl.indexOf("pl")===0) lang = "pl";
+    else if(nl.indexOf("uk")===0 || nl.indexOf("ru")===0) lang = "uk";
+  }
+}catch(e){}
+
+function renderReel(){
+  var box = document.getElementById("reel");
+  if(!REEL_SRC){ box.hidden = true; return; }
+  box.hidden = false;
+  if(!box.firstChild){
+    var v = document.createElement("video");
+    v.src = REEL_SRC; v.muted = true; v.defaultMuted = true; v.loop = true;
+    v.autoplay = true; v.playsInline = true; v.setAttribute("playsinline","");
+    v.setAttribute("aria-label","Showreel");
+    box.appendChild(v);
+    var p = v.play(); if(p && p.catch) p.catch(function(){});
+    var b = document.createElement("button");
+    b.className = "pill sound"; b.textContent = "🔊";
+    b.setAttribute("aria-label","Toggle sound");
+    b.addEventListener("click", function(){ v.muted = !v.muted; b.textContent = v.muted ? "🔊" : "🔇"; });
+    box.appendChild(b);
+  }
+}
+var io = ("IntersectionObserver" in window) ? new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    var v = en.target;
+    if(en.isIntersecting){
+      if(!v.getAttribute("src") && v.dataset.src) v.src = v.dataset.src;
+      var pr = v.play(); if(pr && pr.catch) pr.catch(function(){});
+    } else { v.pause(); }
+  });
+},{rootMargin:"200px"}) : null;
+
+function renderWork(){
+  if(io) io.disconnect();
+  var g = document.getElementById("grid"); g.innerHTML = "";
+  var gr = ["g1","g2","g3"];
+  WORK.forEach(function(w,i){
+    var el = document.createElement("a");
+    el.className = "card " + w.kind;
+    el.href = w.url; el.target = "_blank"; el.rel = "noopener";
+    el.innerHTML = '<div class="poster '+w.kind+' '+gr[i%3]+'"><span class="play"></span><span class="tag"></span></div><h3></h3><p></p>';
+    el.querySelector(".tag").textContent = T[lang][w.kind==="short" ? "t_short" : "t_long"];
+    el.querySelector("h3").textContent = T[lang][w.k+"_t"];
+    el.querySelector("p").textContent = T[lang][w.k+"_n"];
+    if(w.video){
+      var v = document.createElement("video");
+      v.muted = true; v.defaultMuted = true; v.loop = true; v.playsInline = true;
+      v.setAttribute("playsinline",""); v.setAttribute("aria-hidden","true"); v.preload = "none";
+      v.dataset.src = w.video;
+      v.addEventListener("playing", function(){ el.classList.add("is-playing"); });
+      v.addEventListener("error", function(){ v.remove(); el.classList.remove("is-playing"); });
+      var po = el.querySelector(".poster");
+      po.insertBefore(v, po.firstChild);
+      if(io){ io.observe(v); } else { v.autoplay = true; v.src = w.video; }
+    }
+    g.appendChild(el);
+  });
+}
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i]").forEach(function(n){
+    var k = n.getAttribute("data-i"); if(T[lang][k]) n.textContent = T[lang][k];
+  });
+  document.querySelectorAll("[data-lang]").forEach(function(b){
+    b.setAttribute("aria-pressed", b.getAttribute("data-lang")===lang ? "true" : "false");
+  });
+  renderWork();
+}
+document.querySelectorAll("[data-lang]").forEach(function(b){
+  b.addEventListener("click", function(){
+    lang = b.getAttribute("data-lang");
+    try{ localStorage.setItem("xlore-lang", lang); }catch(e){}
+    applyLang();
+  });
+});
+document.getElementById("yr").textContent = new Date().getFullYear();
+renderReel();
+applyLang();
+</script>
+</body>
+</html>
