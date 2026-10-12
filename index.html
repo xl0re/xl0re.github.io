@@ -128,6 +128,10 @@ a.card:hover .poster{transform:translateY(-4px);box-shadow:0 14px 30px rgba(0,0,
 .steps b{font-size:1.05em}
 .steps span{color:var(--muted);font-size:.9em}
 
+.chips{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+.chip{display:inline-block;padding:.5em 1.1em;border:2px solid var(--ink);border-radius:999px;font-weight:700;text-decoration:none}
+.chip:hover{background:var(--ink);color:var(--bg)}
+
 /* services */
 .rows{border-top:2px solid var(--ink)}
 .row{display:grid;grid-template-columns:1.1fr 2fr auto;gap:12px 28px;align-items:baseline;padding:22px 0;border-bottom:1px solid var(--line)}
@@ -213,6 +217,11 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
       <div class="grid" id="grid"></div>
     </section>
 
+    <section id="clients" hidden>
+      <h2 data-i="cl_h">Worked with</h2>
+      <div class="chips" id="chips"></div>
+    </section>
+
     <section id="services">
       <h2 data-i="svc_h">What I do</h2>
       <p class="sub" data-i="svc_sub">Prices are a starting point. Send me your video and I'll give you an exact number.</p>
@@ -252,6 +261,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
       <div class="big">
         <a class="btn main" href="https://t.me/xl0re" target="_blank" rel="noopener">Telegram @xl0re</a>
         <a class="btn alt" href="https://instagram.com/xlore_davinci" target="_blank" rel="noopener">Instagram @xlore_davinci</a>
+        <a class="btn alt" href="mailto:xloretech@gmail.com">xloretech@gmail.com</a>
       </div>
     </section>
   </main>
@@ -267,11 +277,20 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 var REEL_SRC = "";
 
 var WORK = [
-  { k:"w1", kind:"long",  url:"https://youtu.be/WGEdI12ad_0",           video:"meme.mp4" },
+  { k:"w1", kind:"long",  url:"https://youtu.be/WGEdI12ad_0",           video:"meme.mp4", lang:"PL" },
   { k:"w2", kind:"long",  url:"https://youtu.be/ox6mKp1n-Gg",           video:"news.mp4" },
   { k:"w3", kind:"long",  url:"https://youtu.be/GpKZXDo9TAo",           video:"ads.mp4" },
   { k:"w4", kind:"long",  url:"https://youtu.be/SmcTB0ixxwA",           video:"edit3d.mp4" },
   { k:"w5", kind:"short", url:"https://youtube.com/shorts/QOODsKgXIEg", video:"reels.mp4" }
+];
+
+/* Clients you worked with: { name:"Channel name", url:"https://youtube.com/@channel" }. Empty list hides the block. */
+var CLIENTS = [
+  { name:"@blumbl",      url:"https://www.youtube.com/@blumbl" },
+  { name:"@kaiiwaii",    url:"https://www.youtube.com/@kaiiwaii" },
+  { name:"@shushunchyk", url:"https://www.youtube.com/@shushunchyk" },
+  { name:"@Gladus27",    url:"https://www.youtube.com/@Gladus27" },
+  { name:"@znomaximum (TikTok)", url:"https://www.tiktok.com/@znomaximum" }
 ];
 
 var T = {
@@ -295,9 +314,9 @@ var T = {
     w5_t:"Reels і Shorts",w5_n:"Короткі вертикальні кліпи"}
 };
 
-Object.assign(T.en,{del:"Delivery: Shorts in 1-2 days, YouTube videos in 2-4 days. Never longer than 6 days, often faster.",how_h:"How it works",hw1_t:"Message me",hw1_d:"Send a link to your channel and what you need.",hw2_t:"We agree",hw2_d:"Format, deadline and price. No surprises.",hw3_t:"I edit",hw3_d:"You get a draft quickly.",hw4_t:"Fixes and final",hw4_d:"I fix what you point out and send the final file."});
-Object.assign(T.pl,{del:"Termin: Shorty w 1-2 dni, filmy na YouTube w 2-4 dni. Nigdy dłużej niż 6 dni, często szybciej.",how_h:"Jak pracuję",hw1_t:"Napisz do mnie",hw1_d:"Wyślij link do kanału i napisz, czego potrzebujesz.",hw2_t:"Ustalamy",hw2_d:"Format, termin i cena. Bez niespodzianek.",hw3_t:"Montuję",hw3_d:"Szybko dostajesz wersję roboczą.",hw4_t:"Poprawki i finał",hw4_d:"Poprawiam to, co wskażesz, i wysyłam gotowy plik."});
-Object.assign(T.uk,{del:"Терміни: Shorts за 1-2 дні, відео для YouTube за 2-4 дні. Ніколи довше за 6 днів, часто швидше.",how_h:"Як я працюю",hw1_t:"Напиши мені",hw1_d:"Надішли посилання на канал і що тобі потрібно.",hw2_t:"Домовляємось",hw2_d:"Формат, термін і ціна. Без сюрпризів.",hw3_t:"Монтую",hw3_d:"Швидко отримаєш чернетку.",hw4_t:"Правки і фінал",hw4_d:"Виправляю, що вкажеш, і надсилаю готовий файл."});
+Object.assign(T.en,{cl_h:"Worked with",del:"Delivery: Shorts in 1-2 days, YouTube videos in 2-4 days. Never longer than 6 days, often faster.",how_h:"How it works",hw1_t:"Message me",hw1_d:"Send a link to your channel and what you need.",hw2_t:"We agree",hw2_d:"Format, deadline and price. No surprises.",hw3_t:"I edit",hw3_d:"You get a draft quickly.",hw4_t:"Fixes and final",hw4_d:"I fix what you point out and send the final file."});
+Object.assign(T.pl,{cl_h:"Współpracowałem z",del:"Termin: Shorty w 1-2 dni, filmy na YouTube w 2-4 dni. Nigdy dłużej niż 6 dni, często szybciej.",how_h:"Jak pracuję",hw1_t:"Napisz do mnie",hw1_d:"Wyślij link do kanału i napisz, czego potrzebujesz.",hw2_t:"Ustalamy",hw2_d:"Format, termin i cena. Bez niespodzianek.",hw3_t:"Montuję",hw3_d:"Szybko dostajesz wersję roboczą.",hw4_t:"Poprawki i finał",hw4_d:"Poprawiam to, co wskażesz, i wysyłam gotowy plik."});
+Object.assign(T.uk,{cl_h:"Працював з",del:"Терміни: Shorts за 1-2 дні, відео для YouTube за 2-4 дні. Ніколи довше за 6 днів, часто швидше.",how_h:"Як я працюю",hw1_t:"Напиши мені",hw1_d:"Надішли посилання на канал і що тобі потрібно.",hw2_t:"Домовляємось",hw2_d:"Формат, термін і ціна. Без сюрпризів.",hw3_t:"Монтую",hw3_d:"Швидко отримаєш чернетку.",hw4_t:"Правки і фінал",hw4_d:"Виправляю, що вкажеш, і надсилаю готовий файл."});
 
 var lang = "en";
 try{
@@ -352,7 +371,7 @@ function renderWork(){
     el.className = "card " + w.kind;
     el.href = w.url; el.target = "_blank"; el.rel = "noopener";
     el.innerHTML = '<div class="poster '+w.kind+' '+gr[i%3]+'"><span class="play"></span><span class="tag"></span></div><h3></h3><p></p>';
-    el.querySelector(".tag").textContent = T[lang][w.kind==="short" ? "t_short" : "t_long"];
+    el.querySelector(".tag").textContent = T[lang][w.kind==="short" ? "t_short" : "t_long"] + (w.lang ? " · " + w.lang : "");
     el.querySelector("h3").textContent = T[lang][w.k+"_t"];
     el.querySelector("p").textContent = T[lang][w.k+"_n"];
     if(w.video){
@@ -371,6 +390,16 @@ function renderWork(){
     el.style.transitionDelay = (i*70)+"ms";
     reveal(el);
     g.appendChild(el);
+  });
+}
+function renderClients(){
+  var sec = document.getElementById("clients"), box = document.getElementById("chips");
+  if(!CLIENTS.length){ sec.hidden = true; return; }
+  sec.hidden = false; box.innerHTML = "";
+  CLIENTS.forEach(function(c){
+    var a = document.createElement("a");
+    a.className = "chip"; a.textContent = c.name; a.href = c.url; a.target = "_blank"; a.rel = "noopener";
+    box.appendChild(a);
   });
 }
 function applyLang(){
@@ -392,6 +421,7 @@ document.querySelectorAll("[data-lang]").forEach(function(b){
 });
 document.getElementById("yr").textContent = new Date().getFullYear();
 renderReel();
+renderClients();
 applyLang();
 document.querySelectorAll("section h2, .sub, .row, .steps li, .deadline, .contact .big").forEach(reveal);
 </script>
